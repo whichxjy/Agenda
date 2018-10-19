@@ -1,9 +1,12 @@
 #include "Date.hpp"
+#include <sstream>
+#include <cctype>
+
 Date::Date() : m_year(1999), m_month(1), m_day(1), m_hour(0), m_minute(0) {
 }
 
-Date::Date() : m_year(t_year), m_month(t_month), m_day(t_day),
-				m_hour(t_hour), m_minute(t_minute) {	
+Date::Date(int t_year, int t_month, int t_day, int t_hour, int t_minute) 
+	: m_year(t_year), m_month(t_month), m_day(t_day), m_hour(t_hour), m_minute(t_minute) {	
 }
 
 Date::Date(std::string dateString) {
@@ -25,7 +28,6 @@ int Date::getMonth(void) const {
 void Date::setMonth(const int t_month) {
 	m_month = t_month;	
 }
-
 
 int Date::getDay(void) const {
 	return m_day;	
@@ -51,10 +53,10 @@ void setMinute(const int t_minute) {
 	m_minute = t_minute;	
 }
 
-  /**
-  *   @brief check whether the date is valid or not
-  *   @return the bool indicate valid or not
-  */
+/**
+*   @brief check whether the date is valid or not
+*   @return the bool indicate valid or not
+*/
 bool Date::isValid(const Date t_date) {
 	int year = t_date.getYear(), month = t_date.getMonth(), day = t_date.getDay(),
 		hour = t_date.getHour(), minute = t_date.getMinute();
@@ -87,18 +89,50 @@ bool Date::isValid(const Date t_date) {
 }
 	
 
-  /**
-  * @brief convert a string to date, if the format is not correct return
-  * 0000-00-00/00:00
-  * @return a date
-  */
-  static Date stringToDate(const std::string t_dateString);
+/**
+* @brief convert a string to date, if the format is not correct return
+* 0000-00-00/00:00
+* @return a date
+*/
+Date Date::stringToDate(const std::string t_dateString) {
+	// check the format of string
+	if (t_dateString.size() != 16 || t_dateString[4] != '-'
+	    || t_dateString[7] != '-' || t_dateString[10] != '/'
+	    || t_dateString[13] != ':' || !isdigit(t_dateString[0])
+	    || !isdigit(t_dateString[1]) || !isdigit(t_dateString[2])
+	    || !isdigit(t_dateString[3]) || !isdigit(t_dateString[5])
+	    || !isdigit(t_dateString[6]) || !isdigit(t_dateString[8])
+	    || !isdigit(t_dateString[9]) || !isdigit(t_dateString[11])
+	    || !isdigit(t_dateString[12]) || !isdigit(t_dateString[14])
+	    || !isdigit(t_dateString[15])) {
+		// Not correct
+		return Date(0, 0, 0, 0, 0);
+	}
+	else {
+		// Correct
+		Date date;
+		date.setYear(std::stoi(t_dateString.substr(0, 4)));
+		date.setMonth(std::stoi(t_dateString.substr(5, 2)));
+		date.setDay(std::stoi(t_dateString.substr(8, 2)));
+		date.setHour(std::stoi(t_dateString.substr(11, 2)));
+		date.setYear(std::stoi(t_dateString.substr(14, 2)));
+		return date;
+	}
+}
 
-  /**
-  * @brief convert a date to string, if the format is not correct return
-  * 0000-00-00/00:00
-  */
-  static std::string dateToString(Date t_date);
+/**
+* @brief convert a date to string, if the format is not correct return
+* 0000-00-00/00:00
+*/
+std::string Date::dateToString(Date t_date) {
+	std::ostringstream ostr;
+	ostr << setfill('0') << setw(4) << std::to_string(t_date.getYear()) << "-"
+		<< setw(2) << std::to_string(t_date.getMonth()) << "-"
+		<< setw(2) << std::to_string(t_date.getDay()) << "/"
+		<< setw(2) << std::to_string(t_date.getHour()) << ":"
+		<< setw(2) << std::to_string(t_date.getMinute());
+	return ostr.str();
+}
 
   /**
   *  @brief overload the assign operator
