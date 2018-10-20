@@ -4,8 +4,10 @@
 /**
 *   @brief constructor with argument
 */
-Meeting::Meeting(std::string t_sponsor, std::vector<std::string> t_participator, Date t_startTime,
-      Date t_endTime, std::string t_title)
+Meeting::Meeting(const std::string &t_sponsor,
+          const std::vector<std::string> &t_participator,
+          const Date &t_startTime, const Date &t_endTime,
+          const std::string &t_title)
       : m_sponsor(t_sponsor), m_participators(t_participator), m_startDate(t_startTime),
         m_endDate(t_endTime), m_title(t_title) {
 }
@@ -33,7 +35,7 @@ std::string Meeting::getSponsor(void) const {
 * @brief set the sponsor of a meeting
 * @param  the new sponsor string
 */
-void Meeting::setSponsor(const std::string t_sponsor) {
+void Meeting::setSponsor(const std::string &t_sponsor) {
 	m_sponsor = t_sponsor;
 }
 
@@ -49,7 +51,7 @@ std::vector<std::string> Meeting::getParticipator(void) const {
 *   @brief set the new participators of a meeting
 *   @param the new participators vector
 */
-void Meeting::setParticipator(const std::vector<std::string> t_participators) {
+void Meeting::setParticipator(const std::vector<std::string> &t_participators) {
 	m_participators = t_participators;
 }
 
@@ -62,10 +64,29 @@ Date Meeting::getStartDate(void) const {
 }
 
 /**
+* @brief add a new participator to the meeting
+* @param the new participator
+*/
+void Meeting::addParticipator(const std::string &t_participator) {
+  m_participators.push_back(t_participator);
+}
+
+/**
+* @brief remove a participator of the meeting
+* @param the participator to be removed
+*/
+void Meeting::removeParticipator(const std::string &t_participator) {
+  for (auto iter = m_participators.begin(); iter != m_participators.end(); ++iter) {
+  	if (*iter ==  t_participator)
+      m_participators.erase(iter);
+  }
+}
+
+/**
 * @brief  set the startDate of a meeting
 * @param  the new startdate of a meeting
 */
-void Meeting::setStartDate(const Date t_startTime) {
+void Meeting::setStartDate(const Date &t_startTime) {
 	m_startDate = t_startTime;
 }
 
@@ -81,7 +102,7 @@ Date Meeting::getEndDate(void) const {
 * @brief  set the endDate of a meeting
 * @param  the new enddate of a meeting
 */
-void Meeting::setEndDate(const Date t_endTime) {
+void Meeting::setEndDate(const Date &t_endTime) {
 	m_endDate = t_endTime;
 }
 
@@ -97,7 +118,7 @@ std::string Meeting::getTitle(void) const {
 * @brief  set the title of a meeting
 * @param  the new title of a meeting
 */
-void Meeting::setTitle(const std::string t_title) {
+void Meeting::setTitle(const std::string &t_title) {
 	m_title = t_title;
 }
 
@@ -106,7 +127,7 @@ void Meeting::setTitle(const std::string t_title) {
 * @param t_username the source username
 * @return if the user take part in this meeting
 */
-bool Meeting::isParticipator(const std::string t_username) const {
+bool Meeting::isParticipator(const std::string &t_username) const {
 	return (find(m_participators.begin(), m_participators.end(), t_username) 
 			!= m_participators.end());
 }

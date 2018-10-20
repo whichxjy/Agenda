@@ -5,7 +5,7 @@
 #include <string>
 
 class Date {
-public:
+ public:
   /**
   * @brief default constructor
   */
@@ -19,7 +19,7 @@ public:
   /**
   * @brief constructor with a string
   */
-  Date(std::string dateString);
+  Date(const std::string &dateString);
   /**
   * @brief return the year of a Date
   * @return   a integer indicate the year of a date
@@ -84,20 +84,20 @@ public:
   *   @brief check whether the date is valid or not
   *   @return the bool indicate valid or not
   */
-  static bool isValid(const Date t_date);
+  static bool isValid(const Date &t_date);
 
   /**
   * @brief convert a string to date, if the format is not correct return
   * 0000-00-00/00:00
   * @return a date
   */
-  static Date stringToDate(const std::string t_dateString);
+  static Date stringToDate(const std::string &t_dateString);
 
   /**
-  * @brief convert a date to string, if the format is not correct return
+  * @brief convert a date to string, if the date is invalid return
   * 0000-00-00/00:00
   */
-  static std::string dateToString(Date t_date);
+  static std::string dateToString(const Date &t_date);
 
   /**
   *  @brief overload the assign operator
@@ -129,7 +129,7 @@ public:
   */
   bool operator<=(const Date &t_date) const;
 
-private:
+ private:
   int m_year;
   int m_month;
   int m_day;

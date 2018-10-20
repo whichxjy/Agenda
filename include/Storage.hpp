@@ -1,15 +1,15 @@
 ﻿#ifndef AGENDA_STORAGE_H
 #define AGENDA_STORAGE_H
 
-#include "Meeting.hpp"
-#include "User.hpp"
 #include <functional>
 #include <list>
 #include <memory>
 #include <string>
+#include "Meeting.hpp"
+#include "User.hpp"
 
 class Storage {
-private:
+ private:
   /**
   *   default constructor
   */
@@ -18,8 +18,8 @@ private:
   /**
   *   disallow the copy constructor and assign operator
   */
-  Storage(const Storage & t_another) = delete;
-  void operator=(const Storage & t_another) = delete;
+  Storage(const Storage &t_another) = delete;
+  void operator=(const Storage &t_another) = delete;
 
   /**
   *   read file content into memory
@@ -33,7 +33,7 @@ private:
   */
   bool writeToFile(void);
 
-public:
+ public:
   /**
   * get Instance of storage
   * @return the pointer of the instance
@@ -52,7 +52,7 @@ public:
   * create a user
   * @param a user object
   */
-  void createUser(const User & t_user);
+  void createUser(const User &t_user);
 
   /**
   * query users
@@ -81,14 +81,15 @@ public:
   * create a meeting
   * @param a meeting object
   */
-  void createMeeting(const Meeting & t_meeting);
+  void createMeeting(const Meeting &t_meeting);
 
   /**
   * query meetings
   * @param a lambda function as the filter
   * @return a list of fitted meetings
   */
-  std::list<Meeting> queryMeeting(std::function<bool(const Meeting &)> filter) const;
+  std::list<Meeting> queryMeeting(
+      std::function<bool(const Meeting &)> filter) const;
 
   /**
   * update meetings
@@ -111,7 +112,7 @@ public:
   */
   bool sync(void);
 
-private:
+ private:
   static std::shared_ptr<Storage> m_instance;
   std::list<User> m_userList;
   std::list<Meeting> m_meetingList;
