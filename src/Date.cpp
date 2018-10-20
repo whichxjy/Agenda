@@ -1,6 +1,7 @@
 #include "Date.hpp"
 #include <sstream>
 #include <cctype>
+#include <iomanip>
 
 Date::Date() : m_year(1999), m_month(1), m_day(1), m_hour(0), m_minute(0) {
 }
@@ -10,7 +11,7 @@ Date::Date(int t_year, int t_month, int t_day, int t_hour, int t_minute)
 }
 
 Date::Date(std::string dateString) {
-
+	*this = stringToDate(dateString);
 }
 
 int Date::getYear(void) const {
@@ -33,23 +34,23 @@ int Date::getDay(void) const {
 	return m_day;	
 }
 
-void setDay(const int t_day) {
+void Date::setDay(const int t_day) {
 	m_day = t_day;	
 }
 
-int getHour(void) const {
+int Date::getHour(void) const {
 	return m_day;	
 }
 
-void setHour(const int t_hour) {
+void Date::setHour(const int t_hour) {
 	m_hour = t_hour;	
 }
 
-int getMinute(void) const {
+int Date::getMinute(void) const {
 	return m_hour;	
 }
 
-void setMinute(const int t_minute) {
+void Date::setMinute(const int t_minute) {
 	m_minute = t_minute;	
 }
 
@@ -125,43 +126,71 @@ Date Date::stringToDate(const std::string t_dateString) {
 * 0000-00-00/00:00
 */
 std::string Date::dateToString(Date t_date) {
+	if (!isValid(t_date))
+		return "0000-00-00/00:00";
 	std::ostringstream ostr;
-	ostr << setfill('0') << setw(4) << std::to_string(t_date.getYear()) << "-"
-		<< setw(2) << std::to_string(t_date.getMonth()) << "-"
-		<< setw(2) << std::to_string(t_date.getDay()) << "/"
-		<< setw(2) << std::to_string(t_date.getHour()) << ":"
-		<< setw(2) << std::to_string(t_date.getMinute());
+	ostr << std::setfill('0') << std::setw(4) << std::to_string(t_date.getYear()) << "-"
+		<< std::setw(2) << std::to_string(t_date.getMonth()) << "-"
+		<< std::setw(2) << std::to_string(t_date.getDay()) << "/"
+		<< std::setw(2) << std::to_string(t_date.getHour()) << ":"
+		<< std::setw(2) << std::to_string(t_date.getMinute());
 	return ostr.str();
 }
 
-  /**
-  *  @brief overload the assign operator
-  */
-  Date &operator=(const Date &t_date);
+/**
+*  @brief overload the assign operator
+*/
+Date& Date::operator=(const Date &t_date) {
+	m_year = t_date.getYear();
+	m_month = t_date.getMonth();
+	m_day = t_date.getDay();
+	m_hour = t_date.getHour();
+	m_minute = t_date.getMinute();
+	return *this;
+}
 
-  /**
-  * @brief check whether the CurrentDate is equal to the t_date
-  */
-  bool operator==(const Date &t_date) const;
+/**
+* @brief check whether the CurrentDate is equal to the t_date
+*/
+bool Date::operator==(const Date &t_date) const {
+	return (m_year == t_date.getYear() && m_month == t_date.getMonth()
+			&& m_day == t_date.getDay() && m_hour == t_date.getHour()
+			&& m_minute == t_date.getMinute());
+}
 
-  /**
-  * @brief check whether the CurrentDate is  greater than the t_date
-  */
-  bool operator>(const Date &t_date) const;
+/**
+* @brief check whether the CurrentDate is  greater than the t_date
+*/
+bool Date::operator>(const Date &t_date) const {
+	return (m_year > t_date.getYear()
+			|| (m_year == t_date.getYear() && m_month > t_date.getMonth())
+			|| (m_year == t_date.getYear() && m_month == t_date.getMonth() && m_day > t_date.getDay())
+			|| (m_year == t_date.getYear() && m_month == t_date.getMonth() && m_day == t_date.getDay() 
+				&& m_hour > t_date.getHour())
+			|| (m_year == t_date.getYear() && m_month == t_date.getMonth() && m_day == t_date.getDay() 
+				&& m_hour == t_date.getHour() && m_minute > t_date.getMinute())
+			);
+}
 
-  /**
-  * @brief check whether the CurrentDate is  less than the t_date
-  */
-  bool operator<(const Date &t_date) const;
+/**
+* @brief check whether the CurrentDate is  less than the t_date
+*/
+bool Date::operator<(const Date &t_date) const {
+	return !(*this >= t_date);
+}
 
-  /**
-  * @brief check whether the CurrentDate is  greater or equal than the t_date
-  */
-  bool operator>=(const Date &t_date) const;
+/**
+* @brief check whether the CurrentDate is  greater or equal than the t_date
+*/
+bool Date::operator>=(const Date &t_date) const {
+	return (*this > t_date || *this == t_date);
+}
 
-  /**
-  * @brief check whether the CurrentDate is  less than or equal to the t_date
-  */
-  bool operator<=(const Date &t_date) const;
+/**
+* @brief check whether the CurrentDate is  less than or equal to the t_date
+*/
+bool Date::operator<=(const Date &t_date) const {
+	return !(*this > t_date);
+}
 
 
