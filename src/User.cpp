@@ -7,9 +7,11 @@ User::User(const std::string &t_userName, const std::string &t_userPassword,
 {
 }
 
-User::User(const User &t_user) : m_name(t_user.m_name), m_password(t_user.m_password),
-	m_email(t_user.m_email), m_phone(t_user.m_phone)
-{
+User::User(const User &t_user) {
+	m_name = t_user.m_name;
+	m_password = t_user.m_password;
+	m_email = t_user.m_email;
+	m_phone = t_user.m_phone;
 }
 
 std::string User::getName() const {

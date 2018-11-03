@@ -7,12 +7,9 @@
 Meeting::Meeting(const std::string &t_sponsor,
           const std::vector<std::string> &t_participator,
           const Date &t_startTime, const Date &t_endTime,
-          const std::string &t_title) {
-    m_sponsor = t_sponsor;
-    m_participators = t_participator;
-    m_startDate = t_startTime;
-    m_endDate = t_endTime;
-    m_title = t_title;
+          const std::string &t_title)
+      : m_sponsor(t_sponsor), m_participators(t_participator), m_startDate(t_startTime),
+        m_endDate(t_endTime), m_title(t_title) {
 }
 
 /**
@@ -59,6 +56,14 @@ void Meeting::setParticipator(const std::vector<std::string> &t_participators) {
 }
 
 /**
+* @brief get the startDate of a meeting
+* @return return a string indicate startDate
+*/
+Date Meeting::getStartDate(void) const {
+	return m_startDate;
+}
+
+/**
 * @brief add a new participator to the meeting
 * @param the new participator
 */
@@ -75,14 +80,6 @@ void Meeting::removeParticipator(const std::string &t_participator) {
   	if (*iter ==  t_participator)
       m_participators.erase(iter);
   }
-}
-
-/**
-* @brief get the startDate of a meeting
-* @return return a string indicate startDate
-*/
-Date Meeting::getStartDate(void) const {
-	return m_startDate;
 }
 
 /**

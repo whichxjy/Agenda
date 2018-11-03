@@ -6,8 +6,12 @@
 Date::Date() : m_year(0), m_month(0), m_day(0), m_hour(0), m_minute(0) {
 }
 
-Date::Date(int t_year, int t_month, int t_day, int t_hour, int t_minute) 
-	: m_year(t_year), m_month(t_month), m_day(t_day), m_hour(t_hour), m_minute(t_minute) {	
+Date::Date(int t_year, int t_month, int t_day, int t_hour, int t_minute) {
+	m_year = t_year;
+	m_month = t_month;
+	m_day = t_day;
+	m_hour = t_hour;
+	m_minute = t_minute;
 }
 
 Date::Date(const std::string &dateString) {
@@ -39,7 +43,7 @@ void Date::setDay(const int t_day) {
 }
 
 int Date::getHour(void) const {
-	return m_day;	
+	return m_hour;
 }
 
 void Date::setHour(const int t_hour) {
@@ -47,7 +51,7 @@ void Date::setHour(const int t_hour) {
 }
 
 int Date::getMinute(void) const {
-	return m_hour;	
+	return m_minute;	
 }
 
 void Date::setMinute(const int t_minute) {
@@ -107,7 +111,7 @@ Date Date::stringToDate(const std::string &t_dateString) {
 	    || !isdigit(t_dateString[12]) || !isdigit(t_dateString[14])
 	    || !isdigit(t_dateString[15])) {
 		// Not correct
-		return Date(0, 0, 0, 0, 0);
+		return Date();
 	}
 	else {
 		// Correct
@@ -116,7 +120,7 @@ Date Date::stringToDate(const std::string &t_dateString) {
 		date.setMonth(std::stoi(t_dateString.substr(5, 2)));
 		date.setDay(std::stoi(t_dateString.substr(8, 2)));
 		date.setHour(std::stoi(t_dateString.substr(11, 2)));
-		date.setYear(std::stoi(t_dateString.substr(14, 2)));
+		date.setMinute(std::stoi(t_dateString.substr(14, 2)));
 		return date;
 	}
 }
@@ -127,13 +131,13 @@ Date Date::stringToDate(const std::string &t_dateString) {
 */
 std::string Date::dateToString(const Date &t_date) {
 	if (!isValid(t_date))
-		return "0000-00-00/00:00";
+		return std::string("0000-00-00/00:00");
 	std::ostringstream ostr;
-	ostr << std::setfill('0') << std::setw(4) << std::to_string(t_date.getYear()) << "-"
-		<< std::setw(2) << std::to_string(t_date.getMonth()) << "-"
-		<< std::setw(2) << std::to_string(t_date.getDay()) << "/"
-		<< std::setw(2) << std::to_string(t_date.getHour()) << ":"
-		<< std::setw(2) << std::to_string(t_date.getMinute());
+	ostr << std::setfill('0') << std::setw(4) << t_date.getYear() << "-"
+		<< std::setw(2) << t_date.getMonth() << "-"
+		<< std::setw(2) << t_date.getDay() << "/"
+		<< std::setw(2) << t_date.getHour() << ":"
+		<< std::setw(2) << t_date.getMinute();
 	return ostr.str();
 }
 
