@@ -457,6 +457,5 @@ void AgendaService::startAgenda(void) {
  * quit Agenda service
  */
 void AgendaService::quitAgenda(void) {
-	m_storage->sync();
 	m_storage = nullptr;
 }
