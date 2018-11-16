@@ -76,10 +76,13 @@ void Meeting::addParticipator(const std::string &t_participator) {
 * @param the participator to be removed
 */
 void Meeting::removeParticipator(const std::string &t_participator) {
-  for (auto iter = m_participators.begin(); iter != m_participators.end(); ++iter) {
-  	if (*iter ==  t_participator)
-      m_participators.erase(iter);
-  }
+	auto iter = m_participators.begin();
+	while (iter != m_participators.end()) {
+		if (*iter == t_participator)
+			iter = m_participators.erase(iter);
+		else
+			++iter;
+	}
 }
 
 /**
