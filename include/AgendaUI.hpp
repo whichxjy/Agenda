@@ -63,6 +63,12 @@ class AgendaUI {
      */
     void createMeeting(void);
 
+    void addMeetingParticipator(void);
+
+    void removeMeetingParticipator(void);
+
+    void requestToQuitMeeting(void);
+
     /**
      * list all meetings from storage
      */

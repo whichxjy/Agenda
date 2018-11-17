@@ -3,6 +3,7 @@
 
 AgendaService::AgendaService() {
 	startAgenda();
+	m_storage = Storage::getInstance();
 }
 
 AgendaService::~AgendaService() {
@@ -64,18 +65,15 @@ bool AgendaService::deleteUser(const std::string &userName, const std::string &p
 	// 	return false;
 	// });
 
-	// Delete all meetings whose sponsor is the user
 	deleteAllMeetings(userName);
 
-	// Romove participator from the meeting if the user is participator
 	m_storage->updateMeeting([userName](const Meeting& meeting)->bool {
 		return meeting.isParticipator(userName);
 	},
-		[userName](Meeting & meeting)->void {
+		[userName](Meeting &meeting)->void {
 			meeting.removeParticipator(userName);
 	});
 
-	// Delete the meeting if it have no paticipator
 	m_storage->deleteMeeting([](const Meeting &meeting)->bool {
 		return meeting.getParticipator().empty();
 	});
@@ -113,37 +111,31 @@ bool AgendaService::createMeeting(const std::string &userName, const std::string
 		}
 	}
 
-	// Invaild date
-	if (startDate >= endDate)
+	if (Date(startDate) == Date() || Date(endDate) == Date())
 		return false;
 
-	// // Find the meetings that the user is sponsor or participator
-	// auto userExistMeetings = m_storage->queryMeeting([userName](const Meeting& meeting)->bool{
-	// 	// Check if the user is sponsor of this meeting
-	// 	if (meeting.getSponsor() == userName)
-	// 		return true;
+	// Check if the date is valid
+	if (!Date::isValid(Date(startDate)) || !Date::isValid(Date(endDate)))
+		return false;
 
-	// 	// Check if the user is a participator of this meeting
-	// 	if (meeting.isParticipator(userName))
-	// 		return true;
 
-	// 	return false;
-	// });
+	// Invaild date
+	if (Date(startDate) >= Date(endDate))
+		return true;
 
 	// Find contradictory meetings
-	auto contradictoryMeetings = m_storage->queryMeeting([userName, title, startDate, endDate] 
-		(const Meeting& meeting)->bool {
+	auto contradictoryMeetings = m_storage->queryMeeting([userName, title, startDate, endDate] (const Meeting& meeting)->bool {
 		// If title already exists
 		if (meeting.getTitle() == title)
 			return true;
 
-		// Check overlap
+		// Cheak overlap
 		if ((meeting.getSponsor() == userName || meeting.isParticipator(userName))
-			&& (Date(endDate) <= meeting.getStartDate() || Date(startDate) >= meeting.getEndDate())) {
+			&& !(Date(endDate) <= meeting.getStartDate() || Date(startDate) >= meeting.getEndDate())) {
 			// Overlap
 			return true;
-		}
-
+		}	
+	 
 		return false;
 	});
 
@@ -219,17 +211,16 @@ bool AgendaService::removeMeetingParticipator(const std::string &userName,
 		return user.getName() == userName;
 	});
 	if (sameNameUsers.empty()) {
-		// Sponsor don't exists in the user list
+		// User don't exists in the user list
 		return false;
 	}
 
-	// // ??????????????????????????
 	// // Check if participator is in the user list
 	// sameNameUsers = m_storage->queryUser([participator](const User& user)->bool {
 	// 	return user.getName() == participator;
 	// });
-	// if (sameNameUsers.size() == 0) {
-	// 	// Participator don't exists in the user list
+	// if (sameNameUsers.empty()) {
+	// 	// Sponsor don't exists in the user list
 	// 	return false;
 	// }
 
@@ -266,7 +257,7 @@ bool AgendaService::quitMeeting(const std::string &userName, const std::string &
 	int updateMeetingNum = m_storage->updateMeeting([userName, title](const Meeting& meeting)->bool {
 		return (meeting.getTitle() == title && meeting.isParticipator(userName));
 	},
-		[userName](Meeting & meeting)->void{
+		[userName](Meeting & meeting)->void {
 			meeting.removeParticipator(userName);
 	});
 
@@ -294,13 +285,14 @@ std::list<Meeting> AgendaService::meetingQuery(const std::string &userName,
 std::list<Meeting> AgendaService::meetingQuery(const std::string &userName,
                                 const std::string &startDate,
                                 const std::string &endDate) const {
-	if (startDate > endDate)
+	if (!Date::isValid(Date(startDate)) || !Date::isValid(Date(endDate))
+		|| Date(startDate) > Date(endDate) || Date(startDate) == Date() || Date(endDate) == Date()) 
 		return std::list<Meeting>();
 
 	return m_storage->queryMeeting([userName, startDate, endDate]
 		(const Meeting& meeting)->bool {
 			return ((meeting.getSponsor() == userName || meeting.isParticipator(userName))
-				&& Date(endDate) >= meeting.getStartDate() && Date(startDate) <= meeting.getEndDate());
+				&& !(Date(endDate) < meeting.getStartDate() || Date(startDate) > meeting.getEndDate()));
 	});
 }
 
