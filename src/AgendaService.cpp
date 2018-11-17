@@ -51,17 +51,33 @@ bool AgendaService::deleteUser(const std::string &userName, const std::string &p
 	if (deleteUserNum == 0)
 		return false;
 
-	// Delete meetings  that the user is in
-	m_storage->deleteMeeting([userName](const Meeting& meeting)->bool{
-		// Check if the user is sponsor of this meeting
-		if (meeting.getSponsor() == userName)
-			return true;
+	// // Delete meetings  that the user is in
+	// m_storage->deleteMeeting([userName](const Meeting& meeting)->bool{
+	// 	// Check if the user is sponsor of this meeting
+	// 	if (meeting.getSponsor() == userName)
+	// 		return true;
 
-		// Check if the user is a participator of this meeting
-		if (meeting.isParticipator(userName))
-			return true;
+	// 	// Check if the user is a participator of this meeting
+	// 	if (meeting.isParticipator(userName))
+	// 		return true;
 
-		return false;
+	// 	return false;
+	// });
+
+	// Delete all meetings whose sponsor is the user
+	deleteAllMeetings(userName);
+
+	// Romove participator from the meeting if the user is participator
+	m_storage->updateMeeting([userName](const Meeting& meeting)->bool {
+		return meeting.isParticipator(userName);
+	},
+		[userName](Meeting & meeting)->void {
+			meeting.removeParticipator(userName);
+	});
+
+	// Delete the meeting if it have no paticipator
+	m_storage->deleteMeeting([](const Meeting &meeting)->bool {
+		return meeting.getParticipator().empty();
 	});
 
 	return true;
@@ -97,39 +113,35 @@ bool AgendaService::createMeeting(const std::string &userName, const std::string
 		}
 	}
 
-	// Find the meetings that the user is sponsor or participator
-	auto userExistMeetings = m_storage->queryMeeting([userName](const Meeting& meeting)->bool{
-		// Check if the user is sponsor of this meeting
-		if (meeting.getSponsor() == userName)
-			return true;
-
-		// Check if the user is a participator of this meeting
-		if (meeting.isParticipator(userName))
-			return true;
-
+	// Invaild date
+	if (startDate >= endDate)
 		return false;
-	});
+
+	// // Find the meetings that the user is sponsor or participator
+	// auto userExistMeetings = m_storage->queryMeeting([userName](const Meeting& meeting)->bool{
+	// 	// Check if the user is sponsor of this meeting
+	// 	if (meeting.getSponsor() == userName)
+	// 		return true;
+
+	// 	// Check if the user is a participator of this meeting
+	// 	if (meeting.isParticipator(userName))
+	// 		return true;
+
+	// 	return false;
+	// });
 
 	// Find contradictory meetings
-	auto contradictoryMeetings = m_storage->queryMeeting([userName, title, startDate, endDate, 
-		participator, userExistMeetings] (const Meeting& meeting)->bool {
+	auto contradictoryMeetings = m_storage->queryMeeting([userName, title, startDate, endDate] 
+		(const Meeting& meeting)->bool {
 		// If title already exists
 		if (meeting.getTitle() == title)
 			return true;
 
-		// Invaild date
-		if (startDate >= endDate)
+		// Check overlap
+		if ((meeting.getSponsor() == userName || meeting.isParticipator(userName))
+			&& (Date(endDate) <= meeting.getStartDate() || Date(startDate) >= meeting.getEndDate())) {
+			// Overlap
 			return true;
-
-		// Cheak overlap
-		if (!userExistMeetings.empty()) {
-			for (auto userExistMeeting : userExistMeetings) {
-				// Overlap
-				if (Date(endDate) <= userExistMeeting.getStartDate() 
-					|| Date(startDate) >= userExistMeeting.getEndDate()) {
-					return true;
-				}	
-			} 
 		}
 
 		return false;
@@ -228,7 +240,7 @@ bool AgendaService::removeMeetingParticipator(const std::string &userName,
 		// If title already exists
 		if (meeting.getSponsor() == userName 
 			&& meeting.getTitle() == title
-			&& !meeting.isParticipator(participator)) {
+			&& meeting.isParticipator(participator)) {
 			return true;
 		}
 		else
@@ -256,6 +268,10 @@ bool AgendaService::quitMeeting(const std::string &userName, const std::string &
 	},
 		[userName](Meeting & meeting)->void{
 			meeting.removeParticipator(userName);
+	});
+
+	m_storage->deleteMeeting([](const Meeting &meeting)->bool {
+		return meeting.getParticipator().empty();
 	});
 
 	if (updateMeetingNum == 0) {
