@@ -1,4 +1,5 @@
 #include "AgendaUI.hpp"
+#include "AgendaError.hpp"
 #include <iomanip>
 
 using std::cin;
@@ -242,10 +243,18 @@ void AgendaUI::createMeeting(void) {
          << "[create meeting] ";
     std::string title, startTime, endTime;
     cin >> title >> startTime >> endTime;
-    if (m_agendaService.createMeeting(m_userName, title, startTime, endTime, participators))
+    try {
+        m_agendaService.createMeeting(m_userName, title, startTime, endTime, participators);
         cout << "[create meeting] succeed!" << endl;
-    else
-        cout << "[create meeting] error!" << endl;
+    }
+    catch(const AgendaError& e) {
+        cout << "[create meeting] " << e.what() << endl;
+    }
+
+    // if (m_agendaService.createMeeting(m_userName, title, startTime, endTime, participators))
+    //     cout << "[create meeting] succeed!" << endl;
+    // else
+    //     cout << "[create meeting] error!" << endl;
 }
 
 void AgendaUI::addMeetingParticipator(void) {

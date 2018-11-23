@@ -1,4 +1,5 @@
 #include "AgendaService.hpp"
+#include "AgendaError.hpp"
 #include <functional>
 
 AgendaService::AgendaService() {
@@ -96,8 +97,9 @@ bool AgendaService::createMeeting(const std::string &userName, const std::string
 		return user.getName() == userName;
 	});
 	if (sameNameUsers.empty()) {
-		// Sponsor don't exists in the user list
-		return false;
+		// Sponsor don't exist in the user list
+		// return false;
+		throw AgendaError("Sponsor don't exist in the user list");
 	}
 
 	// Check if participators are in the user list
@@ -106,34 +108,44 @@ bool AgendaService::createMeeting(const std::string &userName, const std::string
 			return user.getName() == participator_name;
 		});
 		if (sameNameUsers.empty()) {
-			// Participator don't exists in the user list
-			return false;
+			// Participator don't exist in the user list
+			// return false;
+			throw AgendaError("Participator don't exist in the user list");
 		}
 	}
 
-	if (Date(startDate) == Date() || Date(endDate) == Date())
-		return false;
+	if (Date(startDate) == Date() || Date(endDate) == Date()) {
+		// return false;
+		throw AgendaError("Date format is incorrect");
+	}
 
 	// Check if the date is valid
-	if (!Date::isValid(Date(startDate)) || !Date::isValid(Date(endDate)))
-		return false;
+	if (!Date::isValid(Date(startDate)) || !Date::isValid(Date(endDate))) {
+		// return false;
+		throw AgendaError("Invaild date");
+	}
 
 
 	// Invaild date
-	if (Date(startDate) >= Date(endDate))
-		return false;
+	if (Date(startDate) >= Date(endDate)) {
+		// return false;
+		throw AgendaError("Invaild date");
+	}
 
 	// Find contradictory meetings
 	auto contradictoryMeetings = m_storage->queryMeeting([userName, title, startDate, endDate] (const Meeting& meeting)->bool {
 		// If title already exists
-		if (meeting.getTitle() == title)
-			return true;
+		if (meeting.getTitle() == title) {
+			// return true;
+			throw AgendaError("Title is duplicated");
+		}
 
 		// Cheak overlap
 		if ((meeting.getSponsor() == userName || meeting.isParticipator(userName))
 			&& !(Date(endDate) <= meeting.getStartDate() || Date(startDate) >= meeting.getEndDate())) {
 			// Overlap
-			return true;
+			// return true;
+			throw AgendaError("Date is overlap");
 		}	
 	 
 		return false;
