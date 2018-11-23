@@ -121,7 +121,7 @@ bool AgendaService::createMeeting(const std::string &userName, const std::string
 
 	// Invaild date
 	if (Date(startDate) >= Date(endDate))
-		return true;
+		return false;
 
 	// Find contradictory meetings
 	auto contradictoryMeetings = m_storage->queryMeeting([userName, title, startDate, endDate] (const Meeting& meeting)->bool {
