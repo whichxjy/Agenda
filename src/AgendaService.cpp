@@ -1,10 +1,10 @@
 #include "AgendaService.hpp"
 #include "AgendaError.hpp"
 #include <functional>
+#include <algorithm>
 
 AgendaService::AgendaService() {
 	startAgenda();
-	m_storage = Storage::getInstance();
 }
 
 AgendaService::~AgendaService() {
@@ -53,19 +53,6 @@ bool AgendaService::deleteUser(const std::string &userName, const std::string &p
 	if (deleteUserNum == 0)
 		return false;
 
-	// // Delete meetings  that the user is in
-	// m_storage->deleteMeeting([userName](const Meeting& meeting)->bool{
-	// 	// Check if the user is sponsor of this meeting
-	// 	if (meeting.getSponsor() == userName)
-	// 		return true;
-
-	// 	// Check if the user is a participator of this meeting
-	// 	if (meeting.isParticipator(userName))
-	// 		return true;
-
-	// 	return false;
-	// });
-
 	deleteAllMeetings(userName);
 
 	m_storage->updateMeeting([userName](const Meeting& meeting)->bool {
@@ -98,9 +85,13 @@ bool AgendaService::createMeeting(const std::string &userName, const std::string
 	});
 	if (sameNameUsers.empty()) {
 		// Sponsor don't exist in the user list
-		// return false;
 		throw AgendaError("Sponsor don't exist in the user list");
 	}
+
+	// user duplicated test
+	std::vector<std::string> alreadyTest;
+	alreadyTest.push_back(userName);
+
 
 	// Check if participators are in the user list
 	for (auto participator_name : participator) {
@@ -109,58 +100,66 @@ bool AgendaService::createMeeting(const std::string &userName, const std::string
 		});
 		if (sameNameUsers.empty()) {
 			// Participator don't exist in the user list
-			// return false;
 			throw AgendaError("Participator don't exist in the user list");
 		}
+
+		// user duplicated test
+		if (find(alreadyTest.begin(), alreadyTest.end(), participator_name) != alreadyTest.end()) {
+			throw AgendaError("User is duplicated");
+		}
+		alreadyTest.push_back(participator_name);
 	}
 
+	// Check if the date format is correct
 	if (Date(startDate) == Date() || Date(endDate) == Date()) {
-		// return false;
 		throw AgendaError("Date format is incorrect");
 	}
 
 	// Check if the date is valid
 	if (!Date::isValid(Date(startDate)) || !Date::isValid(Date(endDate))) {
-		// return false;
-		throw AgendaError("Invaild date");
+		throw AgendaError("Date is invalid");
 	}
-
 
 	// Invaild date
 	if (Date(startDate) >= Date(endDate)) {
-		// return false;
-		throw AgendaError("Invaild date");
+		throw AgendaError("Date is invalid");
+	}
+
+
+	// Test whether someone is busy for another meeting.
+	// (focus on the busy meetings of participators)
+	for (auto participator_name : participator) {
+		auto busyMeetings = m_storage->queryMeeting([participator_name](const Meeting& meeting)->bool {
+			return (meeting.getSponsor() == participator_name || meeting.isParticipator(participator_name));
+		});
+
+		for (auto busyMeeting : busyMeetings) {
+			if (!(busyMeeting.getEndDate() <= Date(startDate) || busyMeeting.getStartDate() >= Date(endDate))) {
+				throw AgendaError("Someone is busy for another meeting");
+			} 
+		}
 	}
 
 	// Find contradictory meetings
-	auto contradictoryMeetings = m_storage->queryMeeting([userName, title, startDate, endDate] (const Meeting& meeting)->bool {
+	// (focus on the sponsor and existing meetings)
+	m_storage->queryMeeting([userName, title, startDate, endDate] (const Meeting& meeting)->bool {
 		// If title already exists
 		if (meeting.getTitle() == title) {
-			// return true;
-			throw AgendaError("Title is duplicated");
+			throw AgendaError("Title already exists");
 		}
 
-		// Cheak overlap
+		// Check overlap
 		if ((meeting.getSponsor() == userName || meeting.isParticipator(userName))
 			&& !(Date(endDate) <= meeting.getStartDate() || Date(startDate) >= meeting.getEndDate())) {
 			// Overlap
-			// return true;
-			throw AgendaError("Date is overlap");
+			throw AgendaError("You are busy for another meeting");
 		}	
 	 
 		return false;
 	});
 
-	// If contradictory meeting exists, then fail to create meeting
-	if (!contradictoryMeetings.empty()) {
-		return false;
-	}
-	else {
-		// create meeting
-		m_storage->createMeeting(Meeting(userName, participator, Date(startDate), Date(endDate), title));
-		return true;
-	}
-
+	m_storage->createMeeting(Meeting(userName, participator, Date(startDate), Date(endDate), title));
+	return true;
 }
 
 bool AgendaService::addMeetingParticipator(const std::string &userName,
@@ -169,13 +168,13 @@ bool AgendaService::addMeetingParticipator(const std::string &userName,
 	if (m_storage == nullptr)
 		return false;
 
-	// Check if user is in the user list
+	// Check if sponsor is in the user list
 	auto sameNameUsers = m_storage->queryUser([userName](const User& user)->bool {
 		return user.getName() == userName;
 	});
 	if (sameNameUsers.empty()) {
-		// User don't exists in the user list
-		return false;
+		// Sponsor don't exist in the user list
+		throw AgendaError("Sponsor don't exist in the user list");
 	}
 
 	// Check if participator is in the user list
@@ -183,29 +182,42 @@ bool AgendaService::addMeetingParticipator(const std::string &userName,
 		return user.getName() == participator;
 	});
 	if (sameNameUsers.empty()) {
-		// Participator don't exists in the user list
-		return false;
+		// Participator don't exist in the user list
+		throw AgendaError("Participator don't exist in the user list");
 	}
+
+	// find all the meetings the participator alread take part
+	auto busyMeetings = m_storage->queryMeeting([participator](const Meeting& meeting)->bool {
+		return (meeting.getSponsor() == participator || meeting.isParticipator(participator));
+	});
 
 	// Check if the title exists, sponsor matchs and paticipator exists
 	// If it exists, update it
-	int updateMeetingNum = m_storage->updateMeeting([userName, title, participator]
+	int updateMeetingNum = m_storage->updateMeeting([userName, title, participator, busyMeetings]
 		(const Meeting& meeting)->bool {
-		// If title already exists
+
+		// Test whether someone is busy for another meeting.
+		for (auto busyMeeting : busyMeetings) {
+			if (!(busyMeeting.getEndDate() <= meeting.getStartDate() || busyMeeting.getStartDate() >= meeting.getEndDate())) {
+				return false;
+			} 
+		}
+
+		// If title exists
 		if (meeting.getSponsor() == userName && meeting.getTitle() == title
 			&& !meeting.isParticipator(participator) && userName != participator) {
 			return true;
 		}
-		else
-			return false;
+
+		return false;
 	},
 		[participator](Meeting & meeting)->void {
 			meeting.addParticipator(participator);
 	});
 
 	if (updateMeetingNum == 0) {
-		// No meeting match
-		return false;
+		// No meeting matching
+		throw AgendaError("No meeting matching");
 	}
 	else {
 		return true;
@@ -223,18 +235,9 @@ bool AgendaService::removeMeetingParticipator(const std::string &userName,
 		return user.getName() == userName;
 	});
 	if (sameNameUsers.empty()) {
-		// User don't exists in the user list
-		return false;
+		// Sponsor don't exist in the user list
+		throw AgendaError("Sponsor don't exist in the user list");
 	}
-
-	// // Check if participator is in the user list
-	// sameNameUsers = m_storage->queryUser([participator](const User& user)->bool {
-	// 	return user.getName() == participator;
-	// });
-	// if (sameNameUsers.empty()) {
-	// 	// Sponsor don't exists in the user list
-	// 	return false;
-	// }
 
 	// Check if the title exists, sponsor matchs and paticipator exists
 	// If it exists, update it
@@ -253,9 +256,13 @@ bool AgendaService::removeMeetingParticipator(const std::string &userName,
 			meeting.removeParticipator(participator);
 	});
 
+	m_storage->deleteMeeting([](const Meeting &meeting)->bool {
+		return meeting.getParticipator().empty();
+	});
+
 	if (updateMeetingNum == 0) {
-		// No meeting match
-		return false;
+		// No meeting matching
+		throw AgendaError("No meeting matching");
 	}
 	else {
 		return true;
@@ -279,7 +286,7 @@ bool AgendaService::quitMeeting(const std::string &userName, const std::string &
 
 	if (updateMeetingNum == 0) {
 		// No meeting match
-		return false;
+		throw AgendaError("No meeting matching");
 	}
 	else {
 		return true;

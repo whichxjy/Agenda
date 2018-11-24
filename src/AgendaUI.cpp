@@ -247,7 +247,7 @@ void AgendaUI::createMeeting(void) {
         m_agendaService.createMeeting(m_userName, title, startTime, endTime, participators);
         cout << "[create meeting] succeed!" << endl;
     }
-    catch(const AgendaError& e) {
+    catch (const AgendaError& e) {
         cout << "[create meeting] " << e.what() << endl;
     }
 
@@ -262,11 +262,13 @@ void AgendaUI::addMeetingParticipator(void) {
          << "[add participator] ";
     std::string title, participator;
     cin >> title >> participator;
-    if (m_agendaService.addMeetingParticipator(m_userName, title, participator))
+    try {
+        m_agendaService.addMeetingParticipator(m_userName, title, participator);
         cout << "[add participator] succeed!" << endl;
-    else
-        cout << "[add participator] error!" << endl;
-
+    }
+    catch (const AgendaError& e) {
+        cout << "[add participator] " << e.what() << endl;
+    }
 }
 
 void AgendaUI::removeMeetingParticipator(void) {
@@ -274,10 +276,13 @@ void AgendaUI::removeMeetingParticipator(void) {
          << "[remove participator] ";
     std::string title, participator;
     cin >> title >> participator;
-    if (m_agendaService.removeMeetingParticipator(m_userName, title, participator))
+    try {
+        m_agendaService.removeMeetingParticipator(m_userName, title, participator);
         cout << "[remove participator] succeed!" << endl;
-    else
-        cout << "[remove participator] error!" << endl;
+    }
+    catch (const AgendaError& e) {
+        cout << "[remove participator] " << e.what() << endl;
+    }
 }
 
 void AgendaUI::requestToQuitMeeting(void) {
@@ -285,10 +290,13 @@ void AgendaUI::requestToQuitMeeting(void) {
          << "[quit meeting] ";
     std::string title;
     cin >> title;
-    if (m_agendaService.quitMeeting(m_userName, title))
+    try {
+        m_agendaService.quitMeeting(m_userName, title);
         cout << "[quit meeting] succeed!" << endl;
-    else
-        cout << "[quit meeting] error!" << endl;
+    }
+    catch (const AgendaError& e) {
+        cout << "[quit meeting] " << e.what() << endl;
+    }
 }
 
 /**
