@@ -1,100 +1,75 @@
-// #ifndef LOGGER_HPP
-// #define LOGGER_HPP
+#ifndef LOGGER_HPP
+#define LOGGER_HPP
 
-// #include <string>
-// #include <memory>
+#include <string>
+#include <memory>
+#include <vector>
 
-// class Logger {
+enum State {
+    SUCCESS,
+    FAILURE
+};
 
-// private:
-// 	Logger(const std::string& logFilePath = "agenda_log.log");
-// 	bool setFileStream(const std::string& logFilePath);
-// 	const std::string getCurrentTime() const;
+class Logger {
 
-// 	std::shared_ptr<std::ofstream> logFileStream;
-// 	static std::shared_ptr<Logger> myLogger;
+private:
+	Logger(const std::string& logFilePath = "agenda_log.log");
+	bool setFileStream(const std::string& logFilePath);
+	const std::string getCurrentTime() const;
 
-// public:
-// 	static std::shared_ptr<Logger> getLogger();
-// 	static void destroyLogger();
-// 	~Logger();
+	std::shared_ptr<std::ofstream> logFileStream;
+	static std::shared_ptr<Logger> myLogger;
 
-//     void userLogIn(void);
+public:
+	static std::shared_ptr<Logger> getLogger();
 
-//     void userRegister(void);
+	static void destroyLogger();
+	~Logger();
 
-//     /**
-//      * user logout
-//      */
-//     void userLogOut(void);
+    void userLogIn(State t_state, std::string t_username);
 
-//     /**
-//      * quit the Agenda
-//      */
-//     void quitAgenda(void);
+    void userRegister(State t_state, std::string t_username, std::string t_email, std::string t_phone);
 
-//     /**
-//      * delete a user from storage
-//      */
-//     void deleteUser(void);
+    void userLogOut(std::string t_username);
 
-//     /**
-//      * list all users from storage
-//      */
-//     void listAllUsers(void);
+    void startAgenda(void);
 
-//     /**
-//      * user create a meeting with someone else
-//      */
-//     void createMeeting(void);
+    void quitAgenda(void);
 
-//     void addMeetingParticipator(void);
+    void deleteUser(State t_state, std::string t_username);
 
-//     void removeMeetingParticipator(void);
+    void listAllUsers(std::string t_username);
 
-//     void requestToQuitMeeting(void);
+    void createMeeting(State t_state, std::string t_username, std::string t_title, 
+            std::string t_startTime, std::string t_endTime, std::vector<std::string> participators);
 
-//     /**
-//      * list all meetings from storage
-//      */
-//     void listAllMeetings(void);
+    void addMeetingParticipator(State t_state, std::string t_username, std::string t_title, 
+            std::string t_participator);
 
-//     /**
-//      * list all meetings that this user sponsored
-//      */
-//     void listAllSponsorMeetings(void);
+    void removeMeetingParticipator(State t_state, std::string t_username, std::string t_title, 
+            std::string t_participator);
 
-//     /**
-//      * list all meetings that this user take part in
-//      */
-//     void listAllParticipateMeetings(void);
+    void requestToQuitMeeting(State t_state, std::string t_username, std::string t_title);
 
-//     /**
-//      * search meetings by title from storage
-//      */
-//     void queryMeetingByTitle(void);
+    void listAllMeetings(std::string t_username);
 
-//     /**
-//      * search meetings by timeinterval from storage
-//      */
-//     void queryMeetingByTimeInterval(void);
+    void listAllSponsorMeetings(std::string t_username);
 
-//     /**
-//      * delete meetings by title from storage
-//      */
-//     void deleteMeetingByTitle(void);
+    void listAllParticipateMeetings(std::string t_username);
 
-//     /**
-//      * delete all meetings that this user sponsored
-//      */
-//     void deleteAllMeetings(void);
+    void queryMeetingByTitle(std::string t_username, std::string t_title);
 
-//     /**
-//      * show the meetings in the screen
-//      */
-//     void printMeetings(std::list<Meeting> t_meetings);
+    void queryMeetingByTimeInterval(std::string t_username, std::string t_startTime, std::string t_endTime);
 
-// };
+    void deleteMeetingByTitle(State t_state, std::string t_username, std::string t_title);
 
-// #endif
+    void deleteAllMeetings(State t_state, std::string t_username);
+
+    void readFromFile(State t_state, std::string t_userPath, std::string t_meetingPath);
+
+    void writeToFile(State t_state, std::string t_userPath, std::string t_meetingPath);
+
+};
+
+#endif
 

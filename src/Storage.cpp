@@ -1,5 +1,6 @@
 #include "Storage.hpp"
 #include "Path.hpp"
+#include "Logger.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -32,8 +33,10 @@ Storage::~Storage() {
 bool Storage::readFromFile(void) {
 	std::ifstream user_input(Path::userPath), meeting_input(Path::meetingPath);
 
-	if (!user_input.is_open() || !meeting_input.is_open())
+	if (!user_input.is_open() || !meeting_input.is_open()) {
+		Logger::getLogger()->readFromFile(FAILURE, Path::userPath, Path::meetingPath);
 		return false;
+	}
 
 	m_userList.clear();
 	m_meetingList.clear();
@@ -84,6 +87,7 @@ bool Storage::readFromFile(void) {
 	}
 	meeting_input.close();
 
+	Logger::getLogger()->readFromFile(SUCCESS, Path::userPath, Path::meetingPath);
 	return true;
 }
 
@@ -94,8 +98,10 @@ bool Storage::readFromFile(void) {
 bool Storage::writeToFile(void) {
 	std::ofstream user_output(Path::userPath), meeting_output(Path::meetingPath);
 
-	if (!user_output.is_open() || !meeting_output.is_open())
+	if (!user_output.is_open() || !meeting_output.is_open()) {
+		Logger::getLogger()->writeToFile(FAILURE, Path::userPath, Path::meetingPath);
 		return false;
+	}
 
 	for (const auto &user : m_userList) {
 		user_output << "\"" << user.getName() << "\","
@@ -126,6 +132,7 @@ bool Storage::writeToFile(void) {
 	}
 	meeting_output.close();
 
+	Logger::getLogger()->writeToFile(SUCCESS, Path::userPath, Path::meetingPath);
 	return true;
 }
 

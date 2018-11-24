@@ -2,6 +2,7 @@
 #define AGENDAUI_H
 
 #include "AgendaService.hpp"
+#include "Logger.hpp"
 #include <iostream>
 #include <string>
 
@@ -112,6 +113,7 @@ class AgendaUI {
     std::string m_userName;
     std::string m_userPassword;
     AgendaService m_agendaService;
+    std::shared_ptr<Logger> logger;
 };
 
 #endif

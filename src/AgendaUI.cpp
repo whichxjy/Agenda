@@ -1,5 +1,6 @@
 #include "AgendaUI.hpp"
 #include "AgendaError.hpp"
+
 #include <iomanip>
 
 using std::cin;
@@ -7,6 +8,7 @@ using std::cout;
 using std::endl;
 
 AgendaUI::AgendaUI() {
+    logger = Logger::getLogger();
     startAgenda();
 }
 
@@ -43,6 +45,7 @@ void AgendaUI::OperationLoop(void) {
 */
 void AgendaUI::startAgenda(void) {
     m_agendaService.startAgenda();
+    logger->startAgenda();
 }
 /**
 * catch user's operation
@@ -141,10 +144,12 @@ void AgendaUI::userLogIn(void) {
         cout << "[log in] succeed!" << endl;
         m_userName = name;
         m_userPassword = password;
+        logger->userLogIn(SUCCESS, name);
         while (executeOperation(getOperation()));
     }
     else {
         cout << "[log in] Password error or user doesn't exist" << endl;
+        logger->userLogIn(FAILURE, name);
     }
 }
 
@@ -158,9 +163,11 @@ void AgendaUI::userRegister(void) {
     cin >> name >> password >> email >> phone;
     if (m_agendaService.userRegister(name, password, email, phone)) {
         cout << "[register] succeed!" << endl;
+        logger->userRegister(SUCCESS, name, email, phone);
     }
     else {
         cout << "[register] This username has been registered!" << endl;
+        logger->userRegister(FAILURE, name, email, phone);
     }
 }
 
@@ -174,6 +181,7 @@ void AgendaUI::userLogOut(void) {
          << "*        Log Out        *" << endl
          << "*                       *" << endl
          << "*************************\n" << endl;
+    logger->userLogOut(m_userName);
 }
 
 /**
@@ -186,6 +194,7 @@ void AgendaUI::quitAgenda(void) {
          << "*        Quit Agenda        *" << endl
          << "*                           *" << endl
          << "*****************************\n" << endl;
+    logger->quitAgenda();
 }
 
 /**
@@ -195,9 +204,11 @@ void AgendaUI::deleteUser(void) {
     cout << "\n[delete Agenda account] ";
     if (m_agendaService.deleteUser(m_userName, m_userPassword)) {
         cout << "succeed!" << endl;
+        logger->deleteUser(SUCCESS, m_userName);
     }
     else {
         cout << "delete Agenda account fail" << endl;
+        logger->deleteUser(FAILURE, m_userName);
     }
 }
 
@@ -213,6 +224,7 @@ void AgendaUI::listAllUsers(void) {
         cout << std::left << std::setw(20) << user.getName() 
         << std::setw(25) << user.getEmail() << std::setw(20) << user.getPhone() << endl;
     }
+    logger->listAllUsers(m_userName);
 }
 
 /**
@@ -246,15 +258,12 @@ void AgendaUI::createMeeting(void) {
     try {
         m_agendaService.createMeeting(m_userName, title, startTime, endTime, participators);
         cout << "[create meeting] succeed!" << endl;
+        logger->createMeeting(SUCCESS, m_userName, title, startTime, endTime, participators);
     }
     catch (const AgendaError& e) {
         cout << "[create meeting] " << e.what() << endl;
+        logger->createMeeting(FAILURE, m_userName, title, startTime, endTime, participators);
     }
-
-    // if (m_agendaService.createMeeting(m_userName, title, startTime, endTime, participators))
-    //     cout << "[create meeting] succeed!" << endl;
-    // else
-    //     cout << "[create meeting] error!" << endl;
 }
 
 void AgendaUI::addMeetingParticipator(void) {
@@ -265,9 +274,11 @@ void AgendaUI::addMeetingParticipator(void) {
     try {
         m_agendaService.addMeetingParticipator(m_userName, title, participator);
         cout << "[add participator] succeed!" << endl;
+        logger->addMeetingParticipator(SUCCESS, m_userName, title, participator);
     }
     catch (const AgendaError& e) {
         cout << "[add participator] " << e.what() << endl;
+        logger->addMeetingParticipator(FAILURE, m_userName, title, participator);
     }
 }
 
@@ -279,9 +290,11 @@ void AgendaUI::removeMeetingParticipator(void) {
     try {
         m_agendaService.removeMeetingParticipator(m_userName, title, participator);
         cout << "[remove participator] succeed!" << endl;
+        logger->removeMeetingParticipator(SUCCESS, m_userName, title, participator);
     }
     catch (const AgendaError& e) {
         cout << "[remove participator] " << e.what() << endl;
+        logger->removeMeetingParticipator(FAILURE, m_userName, title, participator);
     }
 }
 
@@ -293,9 +306,11 @@ void AgendaUI::requestToQuitMeeting(void) {
     try {
         m_agendaService.quitMeeting(m_userName, title);
         cout << "[quit meeting] succeed!" << endl;
+        logger->requestToQuitMeeting(SUCCESS, m_userName, title);
     }
     catch (const AgendaError& e) {
         cout << "[quit meeting] " << e.what() << endl;
+        logger->requestToQuitMeeting(FAILURE, m_userName, title);
     }
 }
 
@@ -305,6 +320,7 @@ void AgendaUI::requestToQuitMeeting(void) {
 void AgendaUI::listAllMeetings(void) {
     cout << "\n[list all meetings]\n" << endl;
     printMeetings(m_agendaService.listAllMeetings(m_userName));
+    logger->listAllMeetings(m_userName);
 }
 
 /**
@@ -313,6 +329,7 @@ void AgendaUI::listAllMeetings(void) {
 void AgendaUI::listAllSponsorMeetings(void) {
     cout << "\n[list all sponsor meetings]\n" << endl;
     printMeetings(m_agendaService.listAllSponsorMeetings(m_userName));
+    logger->listAllSponsorMeetings(m_userName);
 }
 
 /**
@@ -321,6 +338,7 @@ void AgendaUI::listAllSponsorMeetings(void) {
 void AgendaUI::listAllParticipateMeetings(void) {
     cout << "\n[list all participator meetings]\n" << endl;
     printMeetings(m_agendaService.listAllParticipateMeetings(m_userName));
+    logger->listAllParticipateMeetings(m_userName);
 }
 
 /**
@@ -332,6 +350,7 @@ void AgendaUI::queryMeetingByTitle(void) {
     std::string title;
     cin >> title;
     printMeetings(m_agendaService.meetingQuery(m_userName, title));
+    logger->queryMeetingByTitle(m_userName, title);
 }
 
 /**
@@ -344,6 +363,7 @@ void AgendaUI::queryMeetingByTimeInterval(void) {
     cin >> startTime >> endTime;
     cout << "[query meeting]\n";
     printMeetings(m_agendaService.meetingQuery(m_userName, startTime, endTime));
+    logger->queryMeetingByTimeInterval(m_userName, startTime, endTime);
 }
 
 /**
@@ -354,20 +374,28 @@ void AgendaUI::deleteMeetingByTitle(void) {
          << "[delete meeting] ";
     std::string title;
     cin >> title;
-    if (m_agendaService.deleteMeeting(m_userName, title))
+    if (m_agendaService.deleteMeeting(m_userName, title)) {
         cout << "[delete meeting] succeed!" << endl;
-    else
+        logger->deleteMeetingByTitle(SUCCESS, m_userName, title);
+    }
+    else {
         cout << "[delete meeting] delete meeting fail!" << endl;
+        logger->deleteMeetingByTitle(FAILURE, m_userName, title);
+    }
 }
 
 /**
 * delete all meetings that this user sponsored
 */
 void AgendaUI::deleteAllMeetings(void) {
-    if (m_agendaService.deleteAllMeetings(m_userName))
+    if (m_agendaService.deleteAllMeetings(m_userName)) {
         cout << "\n[delete all meeting] succeed!" << endl;
-    else
+        logger->deleteAllMeetings(SUCCESS, m_userName);
+    }
+    else {
         cout << "\n[delete all meeting] delete all meeting fail!" << endl;
+        logger->deleteAllMeetings(FAILURE, m_userName);
+    }
 }
 
 /**
