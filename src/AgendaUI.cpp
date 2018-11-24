@@ -7,12 +7,27 @@ using std::cin;
 using std::cout;
 using std::endl;
 
+void sig_handler(int sig) {
+    if (sig == SIGINT) {
+        Logger::getLogger()->terminateProgram();
+        Storage::getInstance()->sync();
+        cout << "\n"
+             << "***********************************" << endl
+             << "*                                 *" << endl
+             << "*        TERMINATE PROGRAM        *" << endl
+             << "*                                 *" << endl
+             << "***********************************\n" << endl;
+    }
+    exit(sig);
+}
+
 AgendaUI::AgendaUI() {
     logger = Logger::getLogger();
     startAgenda();
 }
 
 void AgendaUI::OperationLoop(void) {
+    signal(SIGINT, sig_handler);
     std::string operation;
     while (true) {
         cout << "\n"
@@ -188,6 +203,7 @@ void AgendaUI::userLogOut(void) {
 * quit the Agenda
 */
 void AgendaUI::quitAgenda(void) {
+    m_agendaService.quitAgenda();
     cout << "\n"
          << "*****************************" << endl
          << "*                           *" << endl

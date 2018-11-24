@@ -5,6 +5,9 @@
 #include "Logger.hpp"
 #include <iostream>
 #include <string>
+#include <csignal>
+
+void sig_handler(int sig);
 
 class AgendaUI {
    public:

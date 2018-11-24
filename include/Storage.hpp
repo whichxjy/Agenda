@@ -5,6 +5,7 @@
 #include <list>
 #include <memory>
 #include <string>
+
 #include "Meeting.hpp"
 #include "User.hpp"
 

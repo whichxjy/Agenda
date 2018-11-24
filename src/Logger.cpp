@@ -96,7 +96,7 @@ void Logger::createMeeting(State t_state, std::string t_username, std::string t_
             std::string t_startTime, std::string t_endTime, std::vector<std::string> participators) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[create meeting] "
-		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ")
+		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ") << std::endl
 		<< "\t\t\t\t" << "username: " << t_username << std::endl
 		<< "\t\t\t\t" << "title: " << t_title << std::endl
 		<< "\t\t\t\t" << "Start Time: " << t_startTime << std::endl
@@ -196,4 +196,9 @@ void Logger::writeToFile(State t_state, std::string t_userPath, std::string t_me
 		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ")
 		<< "user path: " << t_userPath << " | "
 		<< "meeting path: " << t_meetingPath << std::endl;
+}
+
+void Logger::terminateProgram() {
+	*logFileStream << "[" << getCurrentTime() << "] "
+		<< "[*** TERMINATE PROGRAM ***] " << std::endl; 
 }

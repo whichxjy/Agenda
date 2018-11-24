@@ -69,6 +69,8 @@ public:
 
     void writeToFile(State t_state, std::string t_userPath, std::string t_meetingPath);
 
+    void terminateProgram();
+
 };
 
 #endif
