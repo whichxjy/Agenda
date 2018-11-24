@@ -12,10 +12,6 @@ std::shared_ptr<Storage> Storage::getInstance(void) {
 	return m_instance;
 }
 
-
-/**
-*   default constructor
-*/
 Storage::Storage() {
 	m_dirty = false;
 	readFromFile();
@@ -26,10 +22,6 @@ Storage::~Storage() {
 	m_instance = nullptr;
 }
 
-/**
-*   read file content into memory
-*   @return if success, true will be returned
-*/
 bool Storage::readFromFile(void) {
 	std::ifstream user_input(Path::userPath), meeting_input(Path::meetingPath);
 
@@ -91,10 +83,6 @@ bool Storage::readFromFile(void) {
 	return true;
 }
 
-/**
-*   write file content from memory
-*   @return if success, true will be returned
-*/
 bool Storage::writeToFile(void) {
 	std::ofstream user_output(Path::userPath), meeting_output(Path::meetingPath);
 
@@ -142,11 +130,6 @@ void Storage::createUser(const User &t_user) {
 	m_dirty = true;
 }
 
-/**
-* query users
-* @param a lambda function as the filter
-* @return a list of fitted users
-*/
 std::list<User> Storage::queryUser(std::function<bool(const User &)> filter) const {
 	std::list<User> f_users;
 	for (auto user : m_userList) {
@@ -156,12 +139,6 @@ std::list<User> Storage::queryUser(std::function<bool(const User &)> filter) con
 	return f_users;
 }
 
-/**
-* update users
-* @param a lambda function as the filter
-* @param a lambda function as the method to update the user
-* @return the number of updated users
-*/
 int Storage::updateUser(std::function<bool(const User &)> filter,
              std::function<void(User &)> switcher) {
 	int num = 0;
@@ -176,11 +153,6 @@ int Storage::updateUser(std::function<bool(const User &)> filter,
 	return num;
 }
 
-/**
-* delete users
-* @param a lambda function as the filter
-* @return the number of deleted users
-*/
 int Storage::deleteUser(std::function<bool(const User &)> filter) {
 	int num = 0;
 	auto iter = m_userList.begin();
@@ -198,20 +170,11 @@ int Storage::deleteUser(std::function<bool(const User &)> filter) {
 	return num;
 }
 
-/**
-* create a meeting
-* @param a meeting object
-*/
 void Storage::createMeeting(const Meeting &t_meeting) {
 	m_meetingList.push_back(t_meeting);
 	m_dirty = true;
 }
 
-/**
-* query meetings
-* @param a lambda function as the filter
-* @return a list of fitted meetings
-*/
 std::list<Meeting> Storage::queryMeeting(
 		std::function<bool(const Meeting &)> filter) const {
 	std::list<Meeting> f_meetings;
@@ -222,12 +185,6 @@ std::list<Meeting> Storage::queryMeeting(
 	return f_meetings;
 }
 
-/**
-* update meetings
-* @param a lambda function as the filter
-* @param a lambda function as the method to update the meeting
-* @return the number of updated meetings
-*/
 int Storage::updateMeeting(std::function<bool(const Meeting &)> filter,
                 std::function<void(Meeting &)> switcher) {
 	int num = 0;
@@ -242,11 +199,6 @@ int Storage::updateMeeting(std::function<bool(const Meeting &)> filter,
 	return num;
 } 
 
-/**
-* delete meetings
-* @param a lambda function as the filter
-* @return the number of deleted meetings
-*/
 int Storage::deleteMeeting(std::function<bool(const Meeting &)> filter) {
 	int num = 0;
 	auto iter = m_meetingList.begin();
@@ -264,9 +216,6 @@ int Storage::deleteMeeting(std::function<bool(const Meeting &)> filter) {
 	return num;
 }
 
-/**
-* sync with the file
-*/
 bool Storage::sync(void) {
 	if (m_dirty) {
 		m_dirty = false;
@@ -274,4 +223,3 @@ bool Storage::sync(void) {
 	}
 	return false;
 }
-

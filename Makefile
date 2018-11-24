@@ -1,6 +1,30 @@
-Agenda:
-	g++ -o Agenda -I ./include -std=c++11 Agenda.cpp ./src/Date.cpp ./src/Meeting.cpp \
-	./src/Storage.cpp ./src/User.cpp ./src/AgendaService.cpp ./src/AgendaUI.cpp ./src/Logger.cpp
+CC := g++
+FLAGS := -std=c++11 -Wall
+INC_DIR := include
+SRC_DIR := src
+BUILD_DIR := build
+BIN_DIR := bin
+INCLUDE := -I ./$(INC_DIR)
+
+TARGET := Agenda
+
+OBJECTS := $(BUILD_DIR)/Agenda.o $(BUILD_DIR)/Date.o $(BUILD_DIR)/User.o \
+			$(BUILD_DIR)/Meeting.o $(BUILD_DIR)/Storage.o \
+			$(BUILD_DIR)/Logger.o $(BUILD_DIR)/AgendaService.o \
+			$(BUILD_DIR)/AgendaUI.o
+
+
+$(BIN_DIR)/$(TARGET): $(OBJECTS)
+	@mkdir -p $(BIN_DIR)
+	@$(CC) $(FLAGS) $(INCLUDE) $^ -o $@
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	@mkdir -p $(BUILD_DIR)
+	@$(CC) $(FLAGS) $(INCLUDE) -c $^ -o $@  
 
 clean:
-	rm -rf Agenda
+	@echo "Cleaning..."
+	@rm -rf $(BUILD_DIR) $(BIN_DIR)
+
+run: $(BIN_DIR)/$(TARGET)
+	@$(BIN_DIR)/$(TARGET)

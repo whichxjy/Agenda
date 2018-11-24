@@ -17,7 +17,6 @@ bool Logger::setFileStream(const std::string& logFilePath) {
 	logFileStream->open(logFilePath, std::ofstream::app);
 
 	if (!logFileStream->is_open()) {
-		// std::cerr << "Failed to open log file: " << logFilePath << std::endl; 
 		logFileStream = nullptr;
 		return false;
 	}

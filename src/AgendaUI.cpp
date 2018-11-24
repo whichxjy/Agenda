@@ -55,17 +55,11 @@ void AgendaUI::OperationLoop(void) {
     }
 }
 
-/**
-* constructor
-*/
 void AgendaUI::startAgenda(void) {
     m_agendaService.startAgenda();
     logger->startAgenda();
 }
-/**
-* catch user's operation
-* @return the operation
-*/
+
 std::string AgendaUI::getOperation() {
     cout << "\n"
          << "------------------------------------Agenda------------------------------------" << endl
@@ -92,10 +86,6 @@ std::string AgendaUI::getOperation() {
 
 }
 
-/**
-* execute the operation
-* @return if the operationloop continue
-*/
 bool AgendaUI::executeOperation(std::string t_operation) {
     if (t_operation == "o") {
         userLogOut();
@@ -147,9 +137,6 @@ bool AgendaUI::executeOperation(std::string t_operation) {
     return true;
 }
 
-/**
-* user Login
-*/
 void AgendaUI::userLogIn(void) {
     cout << "\n[log in] [user name] [password]" << endl
          << "[log in] ";
@@ -168,9 +155,6 @@ void AgendaUI::userLogIn(void) {
     }
 }
 
-/**
-* user regist
-*/
 void AgendaUI::userRegister(void) {
     cout << "\n[register] [user name] [password] [email] [phone]" << endl
          << "[register] ";
@@ -186,9 +170,6 @@ void AgendaUI::userRegister(void) {
     }
 }
 
-/**
-* user logout
-*/
 void AgendaUI::userLogOut(void) {
     cout << "\n"
          << "*************************" << endl
@@ -199,9 +180,6 @@ void AgendaUI::userLogOut(void) {
     logger->userLogOut(m_userName);
 }
 
-/**
-* quit the Agenda
-*/
 void AgendaUI::quitAgenda(void) {
     m_agendaService.quitAgenda();
     cout << "\n"
@@ -213,9 +191,6 @@ void AgendaUI::quitAgenda(void) {
     logger->quitAgenda();
 }
 
-/**
-* delete a user from storage
-*/
 void AgendaUI::deleteUser(void) {
     cout << "\n[delete Agenda account] ";
     if (m_agendaService.deleteUser(m_userName, m_userPassword)) {
@@ -228,9 +203,6 @@ void AgendaUI::deleteUser(void) {
     }
 }
 
-/**
-* list all users from storage
-*/
 void AgendaUI::listAllUsers(void) {
     cout << "\n[list all users]\n" << endl
          << std::left << std::setw(20) << "name" 
@@ -243,9 +215,6 @@ void AgendaUI::listAllUsers(void) {
     logger->listAllUsers(m_userName);
 }
 
-/**
-* user create a meeting with someone else
-*/
 void AgendaUI::createMeeting(void) {
     cout << "\n[create meeting] [the number of participators]" << endl
          << "[create meeting] ";
@@ -330,36 +299,24 @@ void AgendaUI::requestToQuitMeeting(void) {
     }
 }
 
-/**
-* list all meetings from storage
-*/
 void AgendaUI::listAllMeetings(void) {
     cout << "\n[list all meetings]\n" << endl;
     printMeetings(m_agendaService.listAllMeetings(m_userName));
     logger->listAllMeetings(m_userName);
 }
 
-/**
-* list all meetings that this user sponsored
-*/
 void AgendaUI::listAllSponsorMeetings(void) {
     cout << "\n[list all sponsor meetings]\n" << endl;
     printMeetings(m_agendaService.listAllSponsorMeetings(m_userName));
     logger->listAllSponsorMeetings(m_userName);
 }
 
-/**
-* list all meetings that this user take part in
-*/
 void AgendaUI::listAllParticipateMeetings(void) {
     cout << "\n[list all participator meetings]\n" << endl;
     printMeetings(m_agendaService.listAllParticipateMeetings(m_userName));
     logger->listAllParticipateMeetings(m_userName);
 }
 
-/**
-* search meetings by title from storage
-*/
 void AgendaUI::queryMeetingByTitle(void) {
     cout << "\n[query meeting] [title]" << endl
          << "[query meeting] ";
@@ -369,9 +326,6 @@ void AgendaUI::queryMeetingByTitle(void) {
     logger->queryMeetingByTitle(m_userName, title);
 }
 
-/**
-* search meetings by timeinterval from storage
-*/
 void AgendaUI::queryMeetingByTimeInterval(void) {
     cout << "\n[query meeting] [start time(yyyy-mm-dd/hh:mm)] [end time(yyyy-mm-dd/hh:mm)]" << endl
          << "[query meeting] ";
@@ -382,9 +336,6 @@ void AgendaUI::queryMeetingByTimeInterval(void) {
     logger->queryMeetingByTimeInterval(m_userName, startTime, endTime);
 }
 
-/**
-* delete meetings by title from storage
-*/
 void AgendaUI::deleteMeetingByTitle(void) {
     cout << "\n[delete meeting] [title]" << endl
          << "[delete meeting] ";
@@ -400,9 +351,6 @@ void AgendaUI::deleteMeetingByTitle(void) {
     }
 }
 
-/**
-* delete all meetings that this user sponsored
-*/
 void AgendaUI::deleteAllMeetings(void) {
     if (m_agendaService.deleteAllMeetings(m_userName)) {
         cout << "\n[delete all meeting] succeed!" << endl;
@@ -414,9 +362,6 @@ void AgendaUI::deleteAllMeetings(void) {
     }
 }
 
-/**
-* show the meetings in the screen
-*/
 void AgendaUI::printMeetings(std::list<Meeting> t_meetings) {
     cout << std::left << std::setw(18) << "title" 
          << std::setw(20) << "sponsor" 

@@ -58,10 +58,6 @@ void Date::setMinute(const int t_minute) {
 	m_minute = t_minute;	
 }
 
-/**
-*   @brief check whether the date is valid or not
-*   @return the bool indicate valid or not
-*/
 bool Date::isValid(const Date &t_date) {
 	int year = t_date.getYear(), month = t_date.getMonth(), day = t_date.getDay(),
 		hour = t_date.getHour(), minute = t_date.getMinute();
@@ -93,12 +89,6 @@ bool Date::isValid(const Date &t_date) {
 	return true;
 }
 	
-
-/**
-* @brief convert a string to date, if the format is not correct return
-* 0000-00-00/00:00
-* @return a date
-*/
 Date Date::stringToDate(const std::string &t_dateString) {
 	// check the format of string
 	if (t_dateString.size() != 16 || t_dateString[4] != '-'
@@ -125,10 +115,6 @@ Date Date::stringToDate(const std::string &t_dateString) {
 	}
 }
 
-/**
-* @brief convert a date to string, if the format is not correct return
-* 0000-00-00/00:00
-*/
 std::string Date::dateToString(const Date &t_date) {
 	if (!isValid(t_date))
 		return std::string("0000-00-00/00:00");
@@ -141,9 +127,6 @@ std::string Date::dateToString(const Date &t_date) {
 	return ostr.str();
 }
 
-/**
-*  @brief overload the assign operator
-*/
 Date& Date::operator=(const Date &t_date) {
 	m_year = t_date.getYear();
 	m_month = t_date.getMonth();
@@ -153,18 +136,12 @@ Date& Date::operator=(const Date &t_date) {
 	return *this;
 }
 
-/**
-* @brief check whether the CurrentDate is equal to the t_date
-*/
 bool Date::operator==(const Date &t_date) const {
 	return (m_year == t_date.getYear() && m_month == t_date.getMonth()
 			&& m_day == t_date.getDay() && m_hour == t_date.getHour()
 			&& m_minute == t_date.getMinute());
 }
 
-/**
-* @brief check whether the CurrentDate is  greater than the t_date
-*/
 bool Date::operator>(const Date &t_date) const {
 	return (m_year > t_date.getYear()
 			|| (m_year == t_date.getYear() && m_month > t_date.getMonth())
@@ -176,25 +153,14 @@ bool Date::operator>(const Date &t_date) const {
 			);
 }
 
-/**
-* @brief check whether the CurrentDate is  less than the t_date
-*/
 bool Date::operator<(const Date &t_date) const {
 	return !(*this >= t_date);
 }
 
-/**
-* @brief check whether the CurrentDate is  greater or equal than the t_date
-*/
 bool Date::operator>=(const Date &t_date) const {
 	return (*this > t_date || *this == t_date);
 }
 
-/**
-* @brief check whether the CurrentDate is  less than or equal to the t_date
-*/
 bool Date::operator<=(const Date &t_date) const {
 	return !(*this > t_date);
 }
-
-
