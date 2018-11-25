@@ -126,7 +126,7 @@ bool Storage::writeToFile(void) {
 
 
 void Storage::createUser(const User &t_user) {
-	m_userList.push_back(t_user);
+	m_userList.emplace_back(t_user);
 	m_dirty = true;
 }
 
@@ -134,7 +134,7 @@ std::list<User> Storage::queryUser(std::function<bool(const User &)> filter) con
 	std::list<User> f_users;
 	for (auto user : m_userList) {
 		if (filter(user))
-			f_users.push_back(user);
+			f_users.emplace_back(user);
 	}
 	return f_users;
 }
@@ -171,7 +171,7 @@ int Storage::deleteUser(std::function<bool(const User &)> filter) {
 }
 
 void Storage::createMeeting(const Meeting &t_meeting) {
-	m_meetingList.push_back(t_meeting);
+	m_meetingList.emplace_back(t_meeting);
 	m_dirty = true;
 }
 
@@ -180,7 +180,7 @@ std::list<Meeting> Storage::queryMeeting(
 	std::list<Meeting> f_meetings;
 	for (auto meeting : m_meetingList) {
 		if (filter(meeting))
-			f_meetings.push_back(meeting);
+			f_meetings.emplace_back(meeting);
 	}
 	return f_meetings;
 }

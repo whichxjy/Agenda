@@ -26,48 +26,51 @@ public:
 	static void destroyLogger();
 	~Logger();
 
-    void userLogIn(State t_state, std::string t_username);
+    void userLogIn(State t_state, const std::string& t_username);
 
-    void userRegister(State t_state, std::string t_username, std::string t_email, std::string t_phone);
+    void userRegister(State t_state, const std::string& t_username, const std::string& t_email, 
+        const std::string& t_phone);
 
-    void userLogOut(std::string t_username);
+    void userLogOut(const std::string& t_username);
 
     void startAgenda(void);
 
     void quitAgenda(void);
 
-    void deleteUser(State t_state, std::string t_username);
+    void deleteUser(State t_state, const std::string& t_username);
 
-    void listAllUsers(std::string t_username);
+    void listAllUsers(const std::string& t_username);
 
-    void createMeeting(State t_state, std::string t_username, std::string t_title, 
-            std::string t_startTime, std::string t_endTime, std::vector<std::string> participators);
+    void createMeeting(State t_state, const std::string& t_username, const std::string& t_title, 
+            const std::string& t_startTime, const std::string& t_endTime, 
+            std::vector<std::string> participators);
 
-    void addMeetingParticipator(State t_state, std::string t_username, std::string t_title, 
-            std::string t_participator);
+    void addMeetingParticipator(State t_state, const std::string& t_username, const std::string& t_title, 
+            const std::string& t_participator);
 
-    void removeMeetingParticipator(State t_state, std::string t_username, std::string t_title, 
-            std::string t_participator);
+    void removeMeetingParticipator(State t_state, const std::string& t_username, const std::string& t_title, 
+            const std::string& t_participator);
 
-    void requestToQuitMeeting(State t_state, std::string t_username, std::string t_title);
+    void requestToQuitMeeting(State t_state, const std::string& t_username, const std::string& t_title);
 
-    void listAllMeetings(std::string t_username);
+    void listAllMeetings(const std::string& t_username);
 
-    void listAllSponsorMeetings(std::string t_username);
+    void listAllSponsorMeetings(const std::string& t_username);
 
-    void listAllParticipateMeetings(std::string t_username);
+    void listAllParticipateMeetings(const std::string& t_username);
 
-    void queryMeetingByTitle(std::string t_username, std::string t_title);
+    void queryMeetingByTitle(const std::string& t_username, const std::string& t_title);
 
-    void queryMeetingByTimeInterval(std::string t_username, std::string t_startTime, std::string t_endTime);
+    void queryMeetingByTimeInterval(const std::string& t_username, const std::string& t_startTime, 
+        const std::string& t_endTime);
 
-    void deleteMeetingByTitle(State t_state, std::string t_username, std::string t_title);
+    void deleteMeetingByTitle(State t_state, const std::string& t_username, const std::string& t_title);
 
-    void deleteAllMeetings(State t_state, std::string t_username);
+    void deleteAllMeetings(State t_state, const std::string& t_username);
 
-    void readFromFile(State t_state, std::string t_userPath, std::string t_meetingPath);
+    void readFromFile(State t_state, const std::string& t_userPath, const std::string& t_meetingPath);
 
-    void writeToFile(State t_state, std::string t_userPath, std::string t_meetingPath);
+    void writeToFile(State t_state, const std::string& t_userPath, const std::string& t_meetingPath);
 
     void terminateProgram();
 

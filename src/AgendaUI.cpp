@@ -7,6 +7,7 @@ using std::cin;
 using std::cout;
 using std::endl;
 
+// Termination Signal Handler
 void sig_handler(int sig) {
     if (sig == SIGINT) {
         Logger::getLogger()->terminateProgram();
@@ -27,7 +28,9 @@ AgendaUI::AgendaUI() {
 }
 
 void AgendaUI::OperationLoop(void) {
+    // Termination Signal
     signal(SIGINT, sig_handler);
+    
     std::string operation;
     while (true) {
         cout << "\n"

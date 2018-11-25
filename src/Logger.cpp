@@ -46,14 +46,15 @@ Logger::~Logger() {
 	myLogger = nullptr;
 }
 
-void Logger::userLogIn(State t_state, std::string t_username) {
+void Logger::userLogIn(State t_state, const std::string& t_username) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[log in] "
 		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ")
 		<< "username: " << t_username << std::endl;
 }
 
-void Logger::userRegister(State t_state, std::string t_username, std::string t_email, std::string t_phone) {
+void Logger::userRegister(State t_state, const std::string& t_username, const std::string& t_email, 
+		const std::string& t_phone) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[register] "
 		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ")
@@ -62,7 +63,7 @@ void Logger::userRegister(State t_state, std::string t_username, std::string t_e
 		<< "phone: " << t_phone << std::endl; 
 }
 
-void Logger::userLogOut(std::string t_username) {
+void Logger::userLogOut(const std::string& t_username) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[log out] "
 		<< "username: " << t_username << std::endl;
@@ -78,28 +79,29 @@ void Logger::quitAgenda(void) {
 		<< "[Quit Agenda] " << std::endl;
 }
 
-void Logger::deleteUser(State t_state, std::string t_username) {
+void Logger::deleteUser(State t_state, const std::string& t_username) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[delete Agenda account] "
 		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ")
 		<< "username: " << t_username << std::endl;
 }
 
-void Logger::listAllUsers(std::string t_username) {
+void Logger::listAllUsers(const std::string& t_username) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[list all users] "
 		<< "username: " << t_username << std::endl;
 }
 
-void Logger::createMeeting(State t_state, std::string t_username, std::string t_title, 
-            std::string t_startTime, std::string t_endTime, std::vector<std::string> participators) {
+void Logger::createMeeting(State t_state, const std::string& t_username, const std::string& t_title, 
+            const std::string& t_startTime, const std::string& t_endTime, 
+            std::vector<std::string> participators) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[create meeting] "
 		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ") << std::endl
 		<< "\t\t\t\t" << "username: " << t_username << std::endl
 		<< "\t\t\t\t" << "title: " << t_title << std::endl
 		<< "\t\t\t\t" << "Start Time: " << t_startTime << std::endl
-		<< "\t\t\t\t" << "Endl Time: " << t_endTime << std::endl
+		<< "\t\t\t\t" << "End Time: " << t_endTime << std::endl
 		<< "\t\t\t\t" << "Participators: " << *(participators.begin());
         for (auto iter = participators.begin() + 1; iter != participators.end(); ++iter) {
             *logFileStream << "," << *iter;
@@ -107,8 +109,8 @@ void Logger::createMeeting(State t_state, std::string t_username, std::string t_
         *logFileStream << std::endl; 
 }
 
-void Logger::addMeetingParticipator(State t_state, std::string t_username, std::string t_title, 
-        std::string t_participator) {
+void Logger::addMeetingParticipator(State t_state, const std::string& t_username, const std::string& t_title, 
+        const std::string& t_participator) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[add participator] "
 		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ")
@@ -117,8 +119,8 @@ void Logger::addMeetingParticipator(State t_state, std::string t_username, std::
 		<< "participator: " << t_participator << std::endl;
 }
 
-void Logger::removeMeetingParticipator(State t_state, std::string t_username, std::string t_title, 
-        std::string t_participator) {
+void Logger::removeMeetingParticipator(State t_state, const std::string& t_username, const std::string& t_title, 
+        const std::string& t_participator) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[remove participator] "
 		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ")
@@ -127,7 +129,7 @@ void Logger::removeMeetingParticipator(State t_state, std::string t_username, st
 		<< "participator: " << t_participator << std::endl;
 }
 
-void Logger::requestToQuitMeeting(State t_state, std::string t_username, std::string t_title) {
+void Logger::requestToQuitMeeting(State t_state, const std::string& t_username, const std::string& t_title) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[quit meeting] "
 		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ")
@@ -135,32 +137,33 @@ void Logger::requestToQuitMeeting(State t_state, std::string t_username, std::st
 		<< "title: " << t_title << std::endl;
 }
 
-void Logger::listAllMeetings(std::string t_username) {
+void Logger::listAllMeetings(const std::string& t_username) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[list all meetings] "
 		<< "username: " << t_username << std::endl;
 }
 
-void Logger::listAllSponsorMeetings(std::string t_username) {
+void Logger::listAllSponsorMeetings(const std::string& t_username) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[list all sponsor meetings] "
 		<< "username: " << t_username << std::endl;
 }
 
-void Logger::listAllParticipateMeetings(std::string t_username) {
+void Logger::listAllParticipateMeetings(const std::string& t_username) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[list all participator meetings] "
 		<< "username: " << t_username << std::endl;
 }
 
-void Logger::queryMeetingByTitle(std::string t_username, std::string t_title) {
+void Logger::queryMeetingByTitle(const std::string& t_username, const std::string& t_title) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[query meeting] "
 		<< "username: " << t_username << " | "
 		<< "title: " << t_title << std::endl;
 }
 
-void Logger::queryMeetingByTimeInterval(std::string t_username, std::string t_startTime, std::string t_endTime) {
+void Logger::queryMeetingByTimeInterval(const std::string& t_username, const std::string& t_startTime, 
+		const std::string& t_endTime) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[query meeting] "
 		<< "username: " << t_username << " | "
@@ -168,20 +171,20 @@ void Logger::queryMeetingByTimeInterval(std::string t_username, std::string t_st
 		<< "Endl Time: " << t_endTime << std::endl;
 }
 
-void Logger::deleteMeetingByTitle(State t_state, std::string t_username, std::string t_title) {
+void Logger::deleteMeetingByTitle(State t_state, const std::string& t_username, const std::string& t_title) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[delete meeting] "
 		<< "username: " << t_username << " | "
 		<< "title: " << t_title << std::endl;
 }
 
-void Logger::deleteAllMeetings(State t_state, std::string t_username) {
+void Logger::deleteAllMeetings(State t_state, const std::string& t_username) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[delete meeting] "
 		<< "username: " << t_username << std::endl;
 }
 
-void Logger::readFromFile(State t_state, std::string t_userPath, std::string t_meetingPath) {
+void Logger::readFromFile(State t_state, const std::string& t_userPath, const std::string& t_meetingPath) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[read from file] "
 		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ")
@@ -189,7 +192,7 @@ void Logger::readFromFile(State t_state, std::string t_userPath, std::string t_m
 		<< "meeting path: " << t_meetingPath << std::endl;
 }
 
-void Logger::writeToFile(State t_state, std::string t_userPath, std::string t_meetingPath) {
+void Logger::writeToFile(State t_state, const std::string& t_userPath, const std::string& t_meetingPath) {
 	*logFileStream << "[" << getCurrentTime() << "] "
 		<< "[write to file] "
 		<< ((t_state == SUCCESS) ? "[success] " : "[failure] ")
