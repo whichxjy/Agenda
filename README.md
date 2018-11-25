@@ -1,7 +1,5 @@
 # Agenda
 
----
-
 This is a course project for SYSU Software Engineering Training 2018. It can help you manage users and meetings.
 
 ## Usage
